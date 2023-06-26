@@ -1,0 +1,213 @@
+Write Select statements for the following queries using SQL single row functions:
+
+
+1. Display the department names in the lower case but the initial must be in uppercase.
+
+SQL> SELECT INITCAP(dname) FROM dept;
+
+
+INITCAP(DNAME)
+--------------
+Accounting
+Research
+Sales
+Operations
+
+
+2. Determine the ‘ename’, ‘job’, ‘sal’ rename the title as Job-sal the output must be Job-Sal as
+SMITH [CLERK] RS.2000
+
+
+SQL> SELECT ename || ' [' || job || ']' || ' RS.' || salary as "Job-sal" FROM emp;
+
+
+Job-sal
+-----------------------------------------------------------
+SMITH [CLERK] RS.800
+ALLEN [SALESMAN] RS.1600
+WARD [SALESMAN] RS.1250
+JONES [MANAGER] RS.2975
+MARTIN [SALESMAN] RS.1250
+BLAKE [MANAGER] RS.2850
+CLARK [MANAGER] RS.2450
+SCOTT [ANALYST] RS.3000
+KING [PRESIDENT] RS.5000
+TURNER [SALESMAN] RS.1500
+ADAMS [CLERK] RS.1100
+JAMES [CLERK] RS.950
+FORD [ANALYST] RS.3000
+MILLER [CLERK] RS.1300
+
+14 rows selected.
+
+ 
+
+3. For each department, Count the number of times S occurs in department names.
+
+SQL> SELECT dname, length(dname)-length(replace(dname,'S',NULL)) as "Freq of S" FROM dept;
+
+DNAME           Freq of S
+-------------- ----------
+ACCOUNTING              0
+RESEARCH                1
+SALES                   2
+OPERATIONS              1
+
+
+
+
+4.Write a query to display the department name which does not contain any employees.
+
+SQL>select dname from dept
+    where deptno not in (select distinct deptno from emp);
+
+OUTPUT: DNAME
+	--------------
+	OPERATIONS
+
+
+5.Write a query to display all employee details where employee was joined in year date wise
+1980 and 1990 and 2nd week of every month
+
+SQL> SELECT * from emp
+  2  where TO_CHAR(HIREDATE,'YYYY') between 1980 and 1990
+  3  and TO_CHAR(hiredate,'W')=02;
+
+
+     EMPNO ENAME      JOB              MGR HIREDATE      SALARY       COMM     DEPTNO
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30
+
+
+
+6.Write an SQL statement to convert the current date to new date picture ex: MONDAY 10th
+June 2005 10:30.00 PM
+
+
+SQL> select TO_CHAR(SYSDATE,'DAY DDth MONTH YYYY HH:MI:SS PM') AS "DATE-TIME" FROM DUAL;
+
+
+DATE-TIME
+-----------------------------------------
+MONDAY    26TH JUNE      2023 03:33:38 PM
+
+
+
+7. Write a query to display all employee details who joined last Wednesday of a month and
+experience should be greater than 20 months.
+
+SQL> SELECT * FROM EMP
+  2  WHERE TO_CHAR(HIREDATE,'DAY')='WEDNESDAY' AND TO_CHAR(HIREDATE,'W')=04
+  3  AND MONTHS_BETWEEN(SYSDATE,HIREDATE)>20;
+
+           (OR)
+
+select * from emp
+where TO_CHAR(hiredate,'DY')='WED' and TO_CHAR(hiredate,'MM')-TO_CHAR(NEXT_DAY(hiredate,'WEDNESDAY'),'MM')=1
+AND MONTHS_BETWEEN(SYSDATE,HIREDATE)>20
+
+OUTPUT: no rows selected
+
+
+8. Write a query to calculate the service of employees rounded to years.
+
+SQL> SELECT EMPNO,ENAME,HIREDATE,ROUND(MONTHS_BETWEEN(SYSDATE,HIREDATE)/12) AS EMP_SERVICE FROM EMP
+
+
+     EMPNO ENAME      HIREDATE  EMP_SERVICE
+---------- ---------- --------- -----------
+      7369 SMITH      17-DEC-80          43
+      7499 ALLEN      20-FEB-81          42
+      7521 WARD       22-FEB-81          42
+      7566 JONES      02-APR-81          42
+      7654 MARTIN     28-SEP-81          42
+      7698 BLAKE      01-MAY-81          42
+      7782 CLARK      09-JUN-81          42
+      7788 SCOTT      17-NOV-81          42
+      7839 KING       17-NOV-81          42
+      7844 TURNER     08-SEP-81          42
+      7876 ADAMS      23-MAY-87          36
+      7900 JAMES      03-DEC-81          42
+      7902 FORD       03-DEC-81          42
+      7934 MILLER     23-JAN-82          41
+
+14 rows selected.
+
+
+9. Write a query that will display a list of employees and their salary and the comments as
+follows:
+a. If the salary is more than 1500 then display “above target”
+b. If the salary is equal to 1500 then display “on the target”
+c. If the salary is less than 1500 then display “below the target”
+
+sql>select ename,salary,
+	DECODE(SIGN(SALARY-1500),1,'ABOVE target',
+	0,'on the target',
+	-1,'below the target') as comments
+    from emp;
+
+ENAME          SALARY COMMENTS
+---------- ---------- ----------------
+SMITH             800 below the target
+ALLEN            1600 ABOVE target
+WARD             1250 below the target
+JONES            2975 ABOVE target
+MARTIN           1250 below the target
+BLAKE            2850 ABOVE target
+CLARK            2450 ABOVE target
+SCOTT            3000 ABOVE target
+KING             5000 ABOVE target
+TURNER           1500 on the target
+ADAMS            1100 below the target
+JAMES             950 below the target
+FORD             3000 ABOVE target
+MILLER           1300 below the target
+
+14 rows selected.
+
+
+
+
+10. Display all employee names, employee number, department names &amp; salary grades for
+all employees who are working in department 30.
+
+
+SQL> select e.ename,e.empno,d.dname,e.salary from emp e, dept d
+  2  where e.deptno=d.deptno and e.deptno=30;
+
+ENAME           EMPNO DNAME              SALARY
+---------- ---------- -------------- ----------
+WARD             7521 SALES                1250
+MARTIN           7654 SALES                1250
+BLAKE            7698 SALES                2850
+TURNER           7844 SALES                1500
+JAMES            7900 SALES                 950
+
+
+
+
+11. Display the time of day
+
+SQL> select TO_CHAR(SYSDATE,'HH:MI:SS PM') AS TIME FROM DUAL;
+
+TIME
+-----------
+04:38:26 PM
+
+
+
+12. Find all employees who earn a salary greater than the average salary of their departments.
+
+
+SQL> SELECT e.* FROM emp e,dept d 
+	WHERE e.SALARY > (SELECT AVG(SALARY) FROM emp WHERE d.deptno=e.deptno GROUP BY deptno);
+
+     EMPNO ENAME      JOB              MGR HIREDATE      SALARY       COMM     DEPTNO
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30
+      7788 SCOTT      ANALYST         7566 17-NOV-81       3000                    20
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20
+
